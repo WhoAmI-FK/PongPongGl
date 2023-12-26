@@ -18,6 +18,7 @@ public:
     TransformComponent(int scale);
     TransformComponent(float x, float y);
     TransformComponent(float x, float y, int h, int w, int scale);
+    TransformComponent(float x, float y, int r);
 
     void init() override;
     void update() override;

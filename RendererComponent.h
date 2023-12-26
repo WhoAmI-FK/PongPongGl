@@ -3,10 +3,11 @@
 #include "Component.h"
 #include "TransformComponent.h"
 #include "Renderable.h"
-#include <SDL.h>
 #include "Constants.h"
 #include "Application.h"
 
+#include <SDL.h>
+#include <cmath>
 /*
 inline ComponentID getNewRenderableTypeID()
 {
@@ -93,6 +94,33 @@ public:
 
 class RenderableCircle : public Renderable
 {
+private:
+    int m_radius;
+    float x;
+    float y;
 public:
-    RenderableCircle(){};
+    void init() override {
+        x = y = 0;
+        m_radius = _renderer->m_transformPtr->m_radius;
+    }
+    void update() override {
+        x = _renderer->m_transformPtr->m_position.x;
+        y = _renderer->m_transformPtr->m_position.y;
+        m_radius = _renderer->m_transformPtr->m_radius;
+    }
+    void render() override {
+
+    for (double dy = 1; dy <= m_radius; dy += 1.0)
+	{
+		double dx = floor(sqrt((2.0 * m_radius * dy) - (dy * dy)));
+		float cx = x;
+		double x = cx - dx;
+		float cy = y;
+		SDL_SetRenderDrawColor(App::glb_renderer, 255, 255, 255, 255);
+		SDL_RenderDrawLine(App::glb_renderer, static_cast<int>(cx - dx), static_cast<int>(cy + dy - m_radius), static_cast<int>(cx + dx), static_cast<int>(cy + dy - m_radius));
+		SDL_RenderDrawLine(App::glb_renderer, static_cast<int>(cx - dx), static_cast<int>(cy - dy + m_radius), static_cast<int>(cx + dx), static_cast<int>(cy - dy + m_radius));
+		SDL_SetRenderDrawColor(App::glb_renderer, 0, 0, 0, 255);
+	}
+
+    }
 };
