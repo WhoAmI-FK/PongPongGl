@@ -8,13 +8,16 @@ RendererComponent::~RendererComponent()
 
 void RendererComponent::init() {
     m_transformPtr = &m_gObjPtr->getComponent<TransformComponent>();
-    m_srcRect.x = m_srcRect.y = 200;
+    m_srcRect.x = m_srcRect.y = 0;
     m_srcRect.w = m_transformPtr->m_width;
     m_srcRect.h = m_transformPtr->m_height;
 }
 
 void RendererComponent::update() {
-
+    m_srcRect.x = m_transformPtr->m_position.x;
+    m_srcRect.y = m_transformPtr->m_position.y;
+    m_srcRect.w = m_transformPtr->m_width;
+    m_srcRect.h = m_transformPtr->m_height;
 }
 
 void RendererComponent::render()

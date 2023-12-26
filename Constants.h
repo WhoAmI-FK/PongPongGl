@@ -14,3 +14,10 @@ using ComponentArray = std::array<Component*, maxComponents>;
 
 using ComponentID = std::size_t;
 using Group = std::size_t;
+
+
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 640;
+const int NET_WIDTH = 4;
+const int NET_HEIGHT = 60;
+const int NET_SPACE = 12;

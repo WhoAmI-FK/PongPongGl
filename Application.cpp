@@ -2,6 +2,13 @@
 #include "GameObject.h"
 #include "TransformComponent.h"
 #include "RendererComponent.h"
+#include "KeyboardController.h"
+
+//#define PARALLELEXEC - TODO check how to execute some functions in a separate thread
+
+#ifdef PARALLELEXEC
+#include <thread>
+#endif // PARALLELEXEC
 
 SDL_Renderer* App::glb_renderer = nullptr;
 SDL_Event App::glb_event;
@@ -14,6 +21,7 @@ bool App::glb_isRunning = false;
 GameObjectMgr mgr;
 
 auto& player(mgr.addGObj());
+auto& player2(mgr.addGObj());
 
 App::App()
 {
@@ -42,12 +50,32 @@ void App::init(const char* title, int width, int height, bool fullscreen)
         glb_isRunning = true;
     }
 
-    player.addComponent<TransformComponent>(800.0f, 640.0f, 32, 32, 4);
+    player.addComponent<TransformComponent>(100.0f, 100.0f, 32, 32, 4);
     player.addComponent<RendererComponent>();
+    player.addComponent<KeyboardController>(SDLK_w, SDLK_s);
     player.addGroup(groupPlayers);
+
+
+    player2.addComponent<TransformComponent>(700.0f, 100.0f, 32, 32, 4);
+    player2.addComponent<RendererComponent>();
+    player2.addComponent<KeyboardController>(SDLK_UP, SDLK_DOWN);
+    player2.addGroup(groupPlayers);
+
+    for(int i = 0;i<9;i++)
+    {
+        auto& netObj(mgr.addGObj());
+        netObj.addComponent<TransformComponent>(static_cast<float>((SCREEN_WIDTH/2 - NET_WIDTH/2)),static_cast<float>(i * (NET_HEIGHT + NET_SPACE)),
+                                                NET_HEIGHT,
+                                                NET_WIDTH,
+                                                1);
+        netObj.addComponent<RendererComponent>();
+        netObj.addGroup(groupNet);
+    }
+
 }
 
 auto& players(mgr.getGroup(App::groupPlayers));
+auto& net(mgr.getGroup(App::groupNet));
 
 void App::handleEvents()
 {
@@ -65,7 +93,7 @@ void App::handleEvents()
 
 void App::update()
 {
-
+    mgr.update();
 }
 
 void App::render()
@@ -77,6 +105,11 @@ void App::render()
 	{
 		p->render();
 	}
+
+	for(auto& n : net)
+    {
+        n->render();
+    }
 
     SDL_RenderPresent(glb_renderer);
 }

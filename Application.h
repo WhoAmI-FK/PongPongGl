@@ -28,6 +28,7 @@ public:
     {
         groupMap,
         groupPlayers,
+        groupNet,
         groupColliders,
         groupProjectiles
     };
