@@ -1,6 +1,6 @@
 #include "TransformComponent.h"
 
-TransformComponent::TransformComponent() :
+TransformComponent::TransformComponent() : 
      m_height(32), m_width(32),
      m_scale(1),   m_speed(3)
 {
@@ -25,14 +25,14 @@ TransformComponent::TransformComponent(float x, float y) :
 
 TransformComponent::TransformComponent(float x, float y, int h, int w, int scale)
     : m_height(h), m_width(w),
-      m_scale(scale), m_speed(3)
+      m_scale(scale), m_speed(3) 
 {
     m_position.Zero();
     m_position.x = x;
     m_position.y = y;
 }
 
-void TransformComponent::init()
+void TransformComponent::init() 
 {
     m_velocity.Zero();
 }

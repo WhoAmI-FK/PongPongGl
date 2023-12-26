@@ -3,7 +3,7 @@
 #include "TransformComponent.h"
 #include "RendererComponent.h"
 #include "KeyboardController.h"
-
+#include "Renderable.h"
 //#define PARALLELEXEC - TODO check how to execute some functions in a separate thread
 
 #ifdef PARALLELEXEC
@@ -51,13 +51,16 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     }
 
     player.addComponent<TransformComponent>(100.0f, 100.0f, 32, 32, 4);
-    player.addComponent<RendererComponent>();
+    player.addComponent<RendererComponent>()
+                .addRenderable<RenderableRec>();
     player.addComponent<KeyboardController>(SDLK_w, SDLK_s);
     player.addGroup(groupPlayers);
 
 
     player2.addComponent<TransformComponent>(700.0f, 100.0f, 32, 32, 4);
     player2.addComponent<RendererComponent>();
+    player2.getComponent<RendererComponent>()
+            .addRenderable<RenderableRec>();
     player2.addComponent<KeyboardController>(SDLK_UP, SDLK_DOWN);
     player2.addGroup(groupPlayers);
 
@@ -68,7 +71,8 @@ void App::init(const char* title, int width, int height, bool fullscreen)
                                                 NET_HEIGHT,
                                                 NET_WIDTH,
                                                 1);
-        netObj.addComponent<RendererComponent>();
+        netObj.addComponent<RendererComponent>()
+                    .addRenderable<RenderableRec>();
         netObj.addGroup(groupNet);
     }
 

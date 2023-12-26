@@ -12,6 +12,7 @@ public:
     int m_width;
     int m_scale;
     int m_speed;
+    int m_radius;
 
     TransformComponent();
     TransformComponent(int scale);
