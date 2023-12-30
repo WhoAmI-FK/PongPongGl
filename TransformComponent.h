@@ -22,4 +22,5 @@ public:
 
     void init() override;
     void update() override;
+    void increaseSpeedBy(int inc);
 };

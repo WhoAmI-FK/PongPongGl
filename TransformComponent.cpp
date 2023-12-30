@@ -28,7 +28,7 @@ TransformComponent::TransformComponent(float x, float y) :
 
 TransformComponent::TransformComponent(float x, float y, int h, int w, int scale)
     : m_height(h), m_width(w),
-      m_scale(scale), m_speed(3),
+      m_scale(scale), m_speed(15),
       m_radius(0)
 {
     m_position.Zero();
@@ -37,7 +37,7 @@ TransformComponent::TransformComponent(float x, float y, int h, int w, int scale
 }
 
 TransformComponent::TransformComponent(float x, float y, int r)
-    : m_radius(r)
+    : m_radius(r), m_speed(2)
 {
     m_position.Zero();
     m_position.x = x;
@@ -53,4 +53,9 @@ void TransformComponent::update()
 {
 	m_position.x += static_cast<int>(m_velocity.x * m_speed);
 	m_position.y += static_cast<int>(m_velocity.y * m_speed);
+}
+
+void TransformComponent::increaseSpeedBy(int inc)
+{
+    m_speed += inc;
 }

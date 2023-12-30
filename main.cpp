@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Constants.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,7 +13,7 @@ int main(int argc, char *argv[])
 
     App* app = new App();
 
-    app->init("FAPP", 800, 640, false);
+    app->init("FAPP", SCREEN_WIDTH, SCREEN_HEIGHT, false);
 
     while(app->isAppRunning())
     {

@@ -4,6 +4,7 @@
 #include "RendererComponent.h"
 #include "KeyboardController.h"
 #include "Renderable.h"
+#include "BallController.h"
 //#define PARALLELEXEC - TODO check how to execute some functions in a separate thread
 
 #ifdef PARALLELEXEC
@@ -22,6 +23,7 @@ GameObjectMgr mgr;
 
 auto& player(mgr.addGObj());
 auto& player2(mgr.addGObj());
+auto& ball(mgr.addGObj());
 
 App::App()
 {
@@ -50,14 +52,14 @@ void App::init(const char* title, int width, int height, bool fullscreen)
         glb_isRunning = true;
     }
 
-    player.addComponent<TransformComponent>(100.0f, 100.0f, 32, 32, 4);
+    player.addComponent<TransformComponent>(50.0f, 100.0f, 100, 20, 4);
     player.addComponent<RendererComponent>()
                 .addRenderable<RenderableRec>();
     player.addComponent<KeyboardController>(SDLK_w, SDLK_s);
     player.addGroup(groupPlayers);
 
 
-    player2.addComponent<TransformComponent>(700.0f, 100.0f, 32, 32, 4);
+    player2.addComponent<TransformComponent>(950.0f, 100.0f, 100, 20, 4);
     player2.addComponent<RendererComponent>();
     player2.getComponent<RendererComponent>()
             .addRenderable<RenderableRec>();
@@ -76,10 +78,20 @@ void App::init(const char* title, int width, int height, bool fullscreen)
         netObj.addGroup(groupNet);
     }
 
+    ball.addComponent<TransformComponent>(static_cast<float>((SCREEN_WIDTH/2)),
+                                          static_cast<float>(SCREEN_HEIGHT/2),
+                                          RADIUS);
+    ball.addComponent<RendererComponent>();
+    ball.getComponent<RendererComponent>()
+        .addRenderable<RenderableCircle>();
+    ball.addComponent<BallController>(&player, &player2); // FIX
+    ball.addGroup(groupBall);
+
 }
 
 auto& players(mgr.getGroup(App::groupPlayers));
 auto& net(mgr.getGroup(App::groupNet));
+auto& balls(mgr.getGroup(App::groupBall));
 
 void App::handleEvents()
 {
@@ -113,6 +125,11 @@ void App::render()
 	for(auto& n : net)
     {
         n->render();
+    }
+
+    for(auto& b : balls)
+    {
+        b->render();
     }
 
     SDL_RenderPresent(glb_renderer);

@@ -30,6 +30,7 @@ public:
         groupPlayers,
         groupNet,
         groupColliders,
+        groupBall,
         groupProjectiles
     };
 private:
