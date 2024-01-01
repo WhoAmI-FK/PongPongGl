@@ -17,7 +17,7 @@ public:
 	void render();
 	void clean();
 	bool isAppRunning();
-
+    void reset();
 
 	static SDL_Renderer * glb_renderer;
 	static SDL_Event      glb_event;
@@ -31,9 +31,15 @@ public:
         groupNet,
         groupColliders,
         groupBall,
+        groupUI,
         groupProjectiles
     };
 private:
     // int cnt;
     SDL_Window* m_window;
+
+    // SCORE LOGIC
+    int m_LSCORE;
+    int m_RSCORE;
+
 };

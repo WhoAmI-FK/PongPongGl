@@ -23,7 +23,8 @@ const int NET_WIDTH = 4;
 const int NET_HEIGHT = 60;
 const int NET_SPACE = 12;
 const int RADIUS = 10;
-
+const float L_INIT_POS = 50.0f;
+const float R_INIT_OFFSET = 50.0f;
 // TBD LATER
 //using RenderableBitSet = std::bitset<maxRenderables>;
 
