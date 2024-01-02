@@ -2,6 +2,12 @@
 #include "GameObject.h"
 #include "Vector2D.h"
 
+enum ObjectTag{
+    PLAYER,
+    BALL,
+    DEFAULT
+};
+
 class TransformComponent : public Component
 {
 public:
@@ -13,14 +19,18 @@ public:
     int m_scale;
     int m_speed;
     int m_radius;
+    // Temporary solution
+    ObjectTag m_tag;
 
-    TransformComponent();
-    TransformComponent(int scale);
-    TransformComponent(float x, float y);
-    TransformComponent(float x, float y, int h, int w, int scale);
-    TransformComponent(float x, float y, int r);
+    TransformComponent(ObjectTag ot);
+    TransformComponent(int scale, ObjectTag ot);
+    TransformComponent(float x, float y, ObjectTag ot);
+    TransformComponent(float x, float y, int h, int w, int scale, ObjectTag ot);
+    TransformComponent(float x, float y, int r, ObjectTag ot);
 
     void init() override;
     void update() override;
     void increaseSpeedBy(int inc);
+    
+
 };

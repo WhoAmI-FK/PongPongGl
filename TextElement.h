@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Application.h"
 
 #include <SDL_ttf.h>
 #include <SDL.h>
@@ -40,4 +41,53 @@ public:
         this->m_gObjPtr->getComponent<TextElement>().setText(std::to_string(score));
     }
     //TextElement* m_te;
+};
+
+class Action {
+public:
+    virtual void act() {};
+};
+
+class ExitAction : public Action
+{
+public:
+    void act(){
+        App::glb_isRunning = false;
+    }
+};
+
+
+class PlayAction : public Action
+{
+public:
+    void act()
+    {
+        App::glb_states.pop();
+    }
+};
+
+class MenuElement : public Component
+{
+public:
+    MenuElement(int xP, int yP, std::string text,
+                std::string font, int fSize, SDL_Color& color,
+                SDL_Color& hoverColor, bool isSelected);
+    ~MenuElement();
+
+    void setText(std::string text);
+    std::string m_text; // make private back later
+    void render() override;
+    void setAction(Action* action);
+    void act();
+    void setIsSelected(bool isSelected);
+private:
+    SDL_Rect m_position;
+    std::string m_font;
+    SDL_Color m_color;
+    SDL_Color m_hoverColor;
+    SDL_Texture* m_texture;
+    TTF_Font* m_ttfFont;
+    int m_fsize;
+    bool m_isSelected;
+    std::unique_ptr<Action> m_action;
 };

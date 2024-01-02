@@ -35,7 +35,7 @@ public:
             m_transform->m_position.y = static_cast<float>(SCREEN_HEIGHT - m_transform->m_radius);
         }
 
-        if(m_transform->m_position.x <= player_l->getComponent<TransformComponent>().m_width + m_transform->m_radius  +  player_l->getComponent<TransformComponent>().m_position.x)
+        if(m_transform->m_position.x < player_l->getComponent<TransformComponent>().m_width + m_transform->m_radius  +  player_l->getComponent<TransformComponent>().m_position.x)
         {
             float LPY = player_l->getComponent<TransformComponent>().m_position.y;
             if(m_transform->m_position.y >= LPY &&
@@ -46,7 +46,7 @@ public:
             }
         }
 
-        if(m_transform->m_position.x >= player_r->getComponent<TransformComponent>().m_position.x - m_transform->m_radius)
+        if(m_transform->m_position.x > player_r->getComponent<TransformComponent>().m_position.x - m_transform->m_radius)
         {
             float RPY = player_r->getComponent<TransformComponent>().m_position.y;
             if(m_transform->m_position.y >= RPY &&

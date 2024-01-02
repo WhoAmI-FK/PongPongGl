@@ -5,6 +5,7 @@
 #include "KeyboardController.h"
 #include "Renderable.h"
 #include "TextElement.h"
+#include "MenuController.h"
 #include "BallController.h"
 #include <random>
 //#define PARALLELEXEC - TODO check how to execute some functions in a separate thread
@@ -23,6 +24,7 @@ SDL_Rect App::glb_camera = {0, 0, 800, 640};
 
 bool App::glb_isRunning = false;
 
+std::stack<std::unique_ptr<State>> App::glb_states;
 
 GameObjectMgr mgr;
 
@@ -31,6 +33,12 @@ auto& player2(mgr.addGObj());
 auto& rTracker(mgr.addGObj());
 auto& lTracker(mgr.addGObj());
 auto& ball(mgr.addGObj());
+
+// menu
+auto& playButton(mgr.addGObj());
+auto& exitButton(mgr.addGObj());
+auto& gameTitle(mgr.addGObj());
+auto& menuController(mgr.addGObj());
 
 App::App()
 {
@@ -65,14 +73,14 @@ void App::init(const char* title, int width, int height, bool fullscreen)
         std::cout << "ERROR: TTF NOT INITALIZED" << std::endl; // Change to some debugging technique
     }
 
-    player.addComponent<TransformComponent>(L_INIT_POS, 100.0f, 100, 20, 4);
+    player.addComponent<TransformComponent>(L_INIT_POS, 100.0f, 100, 20, 4, ObjectTag::PLAYER);
     player.addComponent<RendererComponent>()
                 .addRenderable<RenderableRec>();
     player.addComponent<KeyboardController>(SDLK_w, SDLK_s);
     player.addGroup(groupPlayers);
 
 
-    player2.addComponent<TransformComponent>(950.0f, 100.0f, 100, 20, 4);
+    player2.addComponent<TransformComponent>(950.0f, 100.0f, 100, 20, 4, ObjectTag::PLAYER);
     player2.addComponent<RendererComponent>();
     player2.getComponent<RendererComponent>()
             .addRenderable<RenderableRec>();
@@ -85,7 +93,7 @@ void App::init(const char* title, int width, int height, bool fullscreen)
         netObj.addComponent<TransformComponent>(static_cast<float>((SCREEN_WIDTH/2 - NET_WIDTH/2)),static_cast<float>(i * (NET_HEIGHT + NET_SPACE)),
                                                 NET_HEIGHT,
                                                 NET_WIDTH,
-                                                1);
+                                                1, ObjectTag::DEFAULT);
         netObj.addComponent<RendererComponent>()
                     .addRenderable<RenderableRec>();
         netObj.addGroup(groupNet);
@@ -93,7 +101,7 @@ void App::init(const char* title, int width, int height, bool fullscreen)
 
     ball.addComponent<TransformComponent>(static_cast<float>((SCREEN_WIDTH/2)),
                                           static_cast<float>(SCREEN_HEIGHT/2),
-                                          RADIUS);
+                                          RADIUS, ObjectTag::BALL);
     ball.addComponent<RendererComponent>();
     ball.getComponent<RendererComponent>()
         .addRenderable<RenderableCircle>();
@@ -109,12 +117,44 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     rTracker.addComponent<TextElement>(700, 50, "0", "pixfont.ttf", 125, white);
     rTracker.addComponent<ScoreTracker>();
     rTracker.addGroup(groupUI);
+    MainGameState* mGameState(new MainGameState(this));
+
+    std::unique_ptr<State> scene1 {mGameState};
+
+    glb_states.push(std::move(scene1));
+
+    SDL_Color gray = {100, 100, 100, 255};
+
+    playButton.addComponent<MenuElement>(325,250, "PLAY", "pixfont.ttf", 200, white, gray, true);
+    playButton.getComponent<MenuElement>().setAction(new PlayAction());
+    playButton.addGroup(groupMenuUI);
+
+    exitButton.addComponent<MenuElement>(325,400, "EXIT", "pixfont.ttf", 200, white, gray, false);
+    exitButton.getComponent<MenuElement>().setAction(new ExitAction());
+    exitButton.addGroup(groupMenuUI);
+
+    gameTitle.addComponent<TextElement>(250,50, "PONG", "pixfont.ttf", 300, white);
+    gameTitle.addGroup(groupMenuUI);
+    MenuGameState* menuGmState(new MenuGameState(this));
+
+    menuController.addComponent<MenuController>();
+    menuController.getComponent<MenuController>()
+                  .addUIElement(&playButton);
+    menuController.getComponent<MenuController>()
+                  .addUIElement(&exitButton);
+    menuController.addGroup(groupMenuController);
+    std::unique_ptr<State> scene2 {menuGmState};
+
+    glb_states.push(std::move(scene2));
 }
 
 auto& players(mgr.getGroup(App::groupPlayers));
 auto& net(mgr.getGroup(App::groupNet));
 auto& balls(mgr.getGroup(App::groupBall));
 auto& UI(mgr.getGroup(App::groupUI));
+
+auto& MenuUI(mgr.getGroup(App::groupMenuUI));
+
 void App::handleEvents()
 {
     SDL_PollEvent(&glb_event);
@@ -131,6 +171,7 @@ void App::handleEvents()
 
 void App::update()
 {
+    /*
     mgr.update();
 
 
@@ -151,6 +192,8 @@ void App::update()
         std::cout << m_LSCORE << std::endl;
         reset();
     }
+    */
+   glb_states.top()->update();
 }
 
 static std::random_device rd;
@@ -188,6 +231,7 @@ void App::render()
 {
     SDL_RenderClear(glb_renderer);
 
+    /*
     // Rendering here
     for (auto& p : players)
 	{
@@ -208,7 +252,8 @@ void App::render()
     {
         ui->render();
     }
-
+    */
+    glb_states.top()->render();
     SDL_RenderPresent(glb_renderer);
 }
 
@@ -221,4 +266,73 @@ void App::clean()
 
 bool App::isAppRunning(){
     return glb_isRunning;
+}
+
+
+// Simplified state logic
+
+MainGameState::MainGameState(App* app){
+        m_appPtr = app;
+}
+
+
+void MainGameState::update() {
+    mgr.update();
+
+    if(ball.getComponent<TransformComponent>().m_position.x < 0)
+    {
+        m_appPtr->m_RSCORE++;
+        rTracker.getComponent<ScoreTracker>()
+                .updateScore(m_appPtr->m_RSCORE);
+        std::cout << m_appPtr->m_RSCORE << std::endl;
+        // logic for winning
+        // else reset:
+        m_appPtr->reset();
+    }else if(ball.getComponent<TransformComponent>().m_position.x > SCREEN_WIDTH)
+    {
+        m_appPtr->m_LSCORE++;
+        lTracker.getComponent<ScoreTracker>()
+                .updateScore(m_appPtr->m_LSCORE);
+        std::cout << m_appPtr->m_LSCORE << std::endl;
+        m_appPtr->reset();
+    }
+}
+
+void MainGameState::render() {
+    for (auto& p : players)
+	{
+		p->render();
+	}
+
+	for(auto& n : net)
+    {
+        n->render();
+    }
+
+    for(auto& b : balls)
+    {
+        b->render();
+    }
+
+    for(auto& ui: UI)
+    {
+        ui->render();
+    }
+}
+
+void MenuGameState::update()
+{
+    mgr.update();
+}
+
+void MenuGameState::render()
+{
+    for(auto& mUI: MenuUI)
+    {
+        mUI->render();
+    }
+}
+
+MenuGameState::MenuGameState(App* app){
+        m_appPtr = app;
 }
