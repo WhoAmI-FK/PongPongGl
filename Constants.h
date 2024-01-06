@@ -31,3 +31,4 @@ const float R_INIT_OFFSET = 50.0f;
 //using RenderableArray = std::array<Renderable*, maxRenderables>;
 
 //using RenderableID = std::size_t;
+const float DEF_BALL_SPEED = 2.4f;

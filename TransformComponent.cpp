@@ -1,7 +1,7 @@
 #include "TransformComponent.h"
 #include <algorithm>
 
-TransformComponent::TransformComponent(ObjectTag ot) : 
+TransformComponent::TransformComponent(ObjectTag ot) :
      m_height(32), m_width(32),
      m_scale(1),   m_speed(3),
      m_tag(ot),
@@ -30,7 +30,7 @@ TransformComponent::TransformComponent(float x, float y, ObjectTag ot) :
 
 TransformComponent::TransformComponent(float x, float y, int h, int w, int scale, ObjectTag ot)
     : m_height(h), m_width(w),
-      m_scale(scale), m_speed(15),
+      m_scale(scale), m_speed(10),
       m_radius(0), m_tag(ot)
 {
     m_position.Zero();
@@ -39,7 +39,7 @@ TransformComponent::TransformComponent(float x, float y, int h, int w, int scale
 }
 
 TransformComponent::TransformComponent(float x, float y, int r, ObjectTag ot)
-    : m_radius(r), m_speed(2), m_tag(ot)
+    : m_radius(r), m_speed(DEF_BALL_SPEED), m_tag(ot), m_height(0), m_width(0)
 {
     m_position.Zero();
     m_position.x = x;
@@ -47,7 +47,7 @@ TransformComponent::TransformComponent(float x, float y, int r, ObjectTag ot)
     m_position.y = y;
 }
 
-void TransformComponent::init() 
+void TransformComponent::init()
 {
     m_velocity.Zero();
 }
@@ -62,7 +62,7 @@ void TransformComponent::update()
     }
 }
 
-void TransformComponent::increaseSpeedBy(int inc)
+void TransformComponent::increaseSpeedBy(float inc)
 {
     m_speed += inc;
 }

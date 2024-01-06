@@ -22,7 +22,7 @@ void TextElement::setText(std::string text)
     m_texture = SDL_CreateTextureFromSurface(App::glb_renderer, surface);
     SDL_FreeSurface(surface);
 
-    std::cout << "UPDATED: " << m_text << std::endl;
+   // std::cout << "UPDATED: " << m_text << std::endl;
 
     SDL_QueryTexture(m_texture, nullptr, nullptr, &m_position.w, &m_position.h);
 }
@@ -57,7 +57,7 @@ void MenuElement::setIsSelected(bool isSelected)
 }
 void MenuElement::setText(std::string text)
 {
-    std::cout << "TEXTSET:" << m_text << ";isUP:" << m_isSelected << std::endl;
+   // std::cout << "TEXTSET:" << m_text << ";isUP:" << m_isSelected << std::endl;
      SDL_Surface* surface;
     if(m_isSelected){
         surface = TTF_RenderText_Blended(m_ttfFont, text.c_str(), m_hoverColor);

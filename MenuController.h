@@ -16,6 +16,7 @@ public:
     void addUIElement(GameObject* me);
     void refresh();
     void action();
+    bool m_isMenuDisabled;
 private:
     std::vector<GameObject*> m_mUI;
     int m_index;

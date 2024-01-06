@@ -63,6 +63,7 @@ public:
     void act()
     {
         App::glb_states.pop();
+        App::glb_states.top()->init();
     }
 };
 

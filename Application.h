@@ -1,14 +1,16 @@
-
 #pragma once
 
 #include <SDL.h>
 #include <stack>
 #include <memory>
+#include "AudioMgr.h"
 
 class State {
 public:
+    virtual void init(){};
     virtual void update(){};
     virtual void render(){};
+    virtual void pause(){};
     virtual ~State(){};
 };
 
@@ -23,6 +25,7 @@ public:
 	void handleEvents();
 	void update();
 	void render();
+    void resetScore();
 	void clean();
 	bool isAppRunning();
     void reset();
@@ -32,6 +35,8 @@ public:
     static bool                               glb_isRunning;
     static SDL_Rect                           glb_camera;
     static std::stack<std::unique_ptr<State>> glb_states;
+    static AudioMgr                           glb_audioMgr;
+    static App*                               glb_appPtr;
 
     enum groupLabels : std::size_t
     {
@@ -61,8 +66,10 @@ class MainGameState : public State
 public:
     MainGameState(App* app);
     App* m_appPtr;
+    void init() override;
     void update() override;
     void render() override;
+    void pause() override;
 };
 
 class MenuGameState : public State
@@ -70,6 +77,8 @@ class MenuGameState : public State
 public:
     MenuGameState(App* app);
     App* m_appPtr;
+    void init() override;
     void update() override;
     void render() override;
+    void pause() override;
 };

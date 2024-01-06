@@ -7,6 +7,7 @@
 #include "TextElement.h"
 #include "MenuController.h"
 #include "BallController.h"
+#include "Sound.h"
 #include <random>
 //#define PARALLELEXEC - TODO check how to execute some functions in a separate thread
 
@@ -18,6 +19,7 @@
 #include <iostream>
 
 SDL_Renderer* App::glb_renderer = nullptr;
+App* App::glb_appPtr = nullptr;
 SDL_Event App::glb_event;
 
 SDL_Rect App::glb_camera = {0, 0, 800, 640};
@@ -25,6 +27,8 @@ SDL_Rect App::glb_camera = {0, 0, 800, 640};
 bool App::glb_isRunning = false;
 
 std::stack<std::unique_ptr<State>> App::glb_states;
+
+AudioMgr App::glb_audioMgr;
 
 GameObjectMgr mgr;
 
@@ -50,6 +54,7 @@ App::~App()
 
 void App::init(const char* title, int width, int height, bool fullscreen)
 {
+    App::glb_appPtr = this;
     int flags = 0;
     m_RSCORE = m_LSCORE = 0;
 
@@ -72,6 +77,8 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     {
         std::cout << "ERROR: TTF NOT INITALIZED" << std::endl; // Change to some debugging technique
     }
+
+    glb_audioMgr.init();
 
     player.addComponent<TransformComponent>(L_INIT_POS, 100.0f, 100, 20, 4, ObjectTag::PLAYER);
     player.addComponent<RendererComponent>()
@@ -102,6 +109,9 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     ball.addComponent<TransformComponent>(static_cast<float>((SCREEN_WIDTH/2)),
                                           static_cast<float>(SCREEN_HEIGHT/2),
                                           RADIUS, ObjectTag::BALL);
+    // initially we will set ball speed to 0
+    // also change to method, not direct call
+    ball.getComponent<TransformComponent>().m_speed = 0;
     ball.addComponent<RendererComponent>();
     ball.getComponent<RendererComponent>()
         .addRenderable<RenderableCircle>();
@@ -146,6 +156,9 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     std::unique_ptr<State> scene2 {menuGmState};
 
     glb_states.push(std::move(scene2));
+    menuController.getComponent<MenuController>().m_isMenuDisabled = false;
+
+    glb_states.top()->init();
 }
 
 auto& players(mgr.getGroup(App::groupPlayers));
@@ -194,6 +207,7 @@ void App::update()
     }
     */
    glb_states.top()->update();
+   glb_audioMgr.update();
 }
 
 static std::random_device rd;
@@ -221,6 +235,8 @@ void App::reset()
     // inital central position set
     ball.getComponent<TransformComponent>().m_position.x = static_cast<float>(SCREEN_WIDTH/2);
     ball.getComponent<TransformComponent>().m_position.y = static_cast<float>(SCREEN_HEIGHT/2);
+
+    ball.getComponent<TransformComponent>().m_speed = DEF_BALL_SPEED;
 
     // Random direction toss
     ball.getComponent<TransformComponent>().m_velocity.x =    ball.getComponent<TransformComponent>().m_velocity.x * generateRandomValue();
@@ -284,7 +300,7 @@ void MainGameState::update() {
         m_appPtr->m_RSCORE++;
         rTracker.getComponent<ScoreTracker>()
                 .updateScore(m_appPtr->m_RSCORE);
-        std::cout << m_appPtr->m_RSCORE << std::endl;
+        //std::cout << m_appPtr->m_RSCORE << std::endl;
         // logic for winning
         // else reset:
         m_appPtr->reset();
@@ -293,7 +309,7 @@ void MainGameState::update() {
         m_appPtr->m_LSCORE++;
         lTracker.getComponent<ScoreTracker>()
                 .updateScore(m_appPtr->m_LSCORE);
-        std::cout << m_appPtr->m_LSCORE << std::endl;
+       // std::cout << m_appPtr->m_LSCORE << std::endl;
         m_appPtr->reset();
     }
 }
@@ -335,4 +351,37 @@ void MenuGameState::render()
 
 MenuGameState::MenuGameState(App* app){
         m_appPtr = app;
+}
+
+void MenuGameState::init()
+{
+    // for now empty, do nothing here
+}
+
+void App::resetScore()
+{
+    m_RSCORE = m_LSCORE = 0;
+    rTracker.getComponent<ScoreTracker>()
+                .updateScore(m_RSCORE);
+    lTracker.getComponent<ScoreTracker>()
+                .updateScore(m_LSCORE);
+}
+
+void MainGameState::init()
+{
+    m_appPtr->resetScore();
+    ball.getComponent<TransformComponent>().m_speed = DEF_BALL_SPEED;
+}
+
+void MainGameState::pause() // the method called pause but generally it will be just a reset
+// I decided not to implement the pause system and etc
+// this method will be used as exiting to menu
+{
+    ball.getComponent<TransformComponent>().m_speed = 0;
+    ball.getComponent<TransformComponent>().m_position.x = static_cast<float>((SCREEN_WIDTH/2));
+    ball.getComponent<TransformComponent>().m_position.y = static_cast<float>((SCREEN_HEIGHT/2));
+}
+
+void MenuGameState::pause()
+{
 }

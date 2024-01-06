@@ -17,7 +17,7 @@ public:
     int m_height;
     int m_width;
     int m_scale;
-    int m_speed;
+    float m_speed;
     int m_radius;
     // Temporary solution
     ObjectTag m_tag;
@@ -30,7 +30,7 @@ public:
 
     void init() override;
     void update() override;
-    void increaseSpeedBy(int inc);
+    void increaseSpeedBy(float inc);
     
 
 };
