@@ -44,6 +44,11 @@ auto& exitButton(mgr.addGObj());
 auto& gameTitle(mgr.addGObj());
 auto& menuController(mgr.addGObj());
 
+// player choice
+auto& onePlayerButton(mgr.addGObj());
+auto& twoPlayersButton(mgr.addGObj());
+auto& plChMenController(mgr.addGObj());
+
 App::App()
 {
 }
@@ -161,12 +166,36 @@ void App::init(const char* title, int width, int height, bool fullscreen)
     glb_states.top()->init();
 }
 
+void PlayerChoiceState::init()
+{
+    SDL_Color gray = {100, 100, 100, 255};
+    SDL_Color white = {255, 255, 255, 255};
+
+    onePlayerButton.addComponent<MenuElement>(325,250, "I Player", "pixfont.ttf", 200, white, gray, true);
+    onePlayerButton.getComponent<MenuElement>().setAction(new PlayAction());
+    onePlayerButton.addGroup(App::groupPlayerChoiceUI);
+
+    twoPlayersButton.addComponent<MenuElement>(325,400, "II Players", "pixfont.ttf", 200, white, gray, false);
+    twoPlayersButton.getComponent<MenuElement>().setAction(new PlayAction());
+    twoPlayersButton.addGroup(App::groupPlayerChoiceUI);
+
+    plChMenController.addComponent<MenuController>();
+    plChMenController.getComponent<MenuController>()
+                  .addUIElement(&onePlayerButton);
+    plChMenController.getComponent<MenuController>()
+                  .addUIElement(&twoPlayersButton);
+    plChMenController.addGroup(App::groupMenuController);
+
+}
+
 auto& players(mgr.getGroup(App::groupPlayers));
 auto& net(mgr.getGroup(App::groupNet));
 auto& balls(mgr.getGroup(App::groupBall));
 auto& UI(mgr.getGroup(App::groupUI));
 
 auto& MenuUI(mgr.getGroup(App::groupMenuUI));
+
+auto& PlCh(mgr.getGroup(App::groupPlayerChoiceUI));
 
 void App::handleEvents()
 {
@@ -353,6 +382,10 @@ MenuGameState::MenuGameState(App* app){
         m_appPtr = app;
 }
 
+PlayerChoiceState::PlayerChoiceState(App* app){
+        m_appPtr = app;
+}
+
 void MenuGameState::init()
 {
     // for now empty, do nothing here
@@ -384,4 +417,22 @@ void MainGameState::pause() // the method called pause but generally it will be 
 
 void MenuGameState::pause()
 {
+}
+
+void PlayerChoiceState::update()
+{
+    mgr.update();
+}
+
+void PlayerChoiceState::pause()
+{
+
+}
+
+void PlayerChoiceState::render()
+{
+    for(auto& pch : PlCh)
+    {
+        pch->render();
+    }
 }

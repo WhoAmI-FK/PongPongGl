@@ -36,7 +36,7 @@ void MenuController::update()
         {
             case SDLK_w:
             case SDLK_UP:
-            if(!m_isMenuDisabled)
+            if(!m_isMenuDisabled){
                 App::glb_audioMgr.Play(AudioMgr::menuSound);
                // std::cout << "HERE" << std::endl;
                 m_index++;
@@ -44,10 +44,11 @@ void MenuController::update()
                     m_index = 0;
                 }
                 refresh();
+                }
                 break;
             case SDLK_s:
             case SDLK_DOWN:
-                if(!m_isMenuDisabled)
+                if(!m_isMenuDisabled){
                 App::glb_audioMgr.Play(AudioMgr::menuSound);
                 m_index--;
                 if(m_index < 0)
@@ -55,12 +56,14 @@ void MenuController::update()
                     m_index = m_mUI.size()-1;
                 }
                 refresh();
+                }
                 break;
             case SDLK_RETURN:
             case SDLK_RETURN2:
-              
-                if(!m_isMenuDisabled) App::glb_audioMgr.Play(AudioMgr::menuSound);
+                if(!m_isMenuDisabled){
+                App::glb_audioMgr.Play(AudioMgr::menuSound);
                 action();
+                }
                 break;
             case SDLK_m:
                 if(App::glb_states.size()<2){

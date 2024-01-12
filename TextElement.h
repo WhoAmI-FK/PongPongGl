@@ -63,7 +63,21 @@ public:
     void act()
     {
         App::glb_states.pop();
+//        PlayerChoiceState* plChState(new PlayerChoiceState(App::glb_appPtr));
+//        std::unique_ptr<State> scene3 {plChState};
+//        App::glb_states.push(std::move(scene3));
         App::glb_states.top()->init();
+    }
+};
+
+class PlayerChoiceAction : public Action
+{
+public:
+
+    void act()
+    {
+        App::glb_states.pop(); // PlayerChoice Scene pop
+        App::glb_states.top()->init(); // main game init
     }
 };
 

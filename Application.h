@@ -48,7 +48,7 @@ public:
         groupUI,
         groupMenuUI,
         groupMenuController,
-        groupProjectiles
+        groupPlayerChoiceUI,
     };
     int m_LSCORE;
     int m_RSCORE;
@@ -76,6 +76,17 @@ class MenuGameState : public State
 {
 public:
     MenuGameState(App* app);
+    App* m_appPtr;
+    void init() override;
+    void update() override;
+    void render() override;
+    void pause() override;
+};
+
+class PlayerChoiceState : public State
+{
+public:
+    PlayerChoiceState(App* app);
     App* m_appPtr;
     void init() override;
     void update() override;
